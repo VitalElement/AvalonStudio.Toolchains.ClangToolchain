@@ -63,7 +63,7 @@ var fileZipSuffix = ".zip";
 
 var toolchainDownloads = new List<Tuple<string, string, string>> 
 { 
-   // Tuple.Create("ubuntu14", "tar.xz", "http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz"),
+    Tuple.Create("ubuntu14", "tar.xz", "http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz"),
     Tuple.Create("ubuntu14", "tar.bz2", "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update")
 };
 
@@ -86,7 +86,7 @@ Task("Download-Toolchains")
 .Does(()=>{
     foreach(var tc in toolchainDownloads)
     {
-        //DownloadFile(tc.Item3, $"./{tc.Item1}.{tc.Item2}");
+        DownloadFile(tc.Item3, $"./{tc.Item1}.{tc.Item2}");
     }
 });
 
@@ -96,6 +96,10 @@ Task("Extract-Toolchains")
     {
         switch (tc.Item2)
         {
+            case "tar.xz":
+            ZipUncompress(($"./{tc.Item1}.{tc.Item2}", $"./{tc.Item1}");
+            break;
+
             case "tar.bz2":
             BZip2Uncompress($"./{tc.Item1}.{tc.Item2}", $"./{tc.Item1}");
             break;
