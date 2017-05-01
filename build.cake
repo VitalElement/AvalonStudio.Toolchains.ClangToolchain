@@ -62,11 +62,50 @@ var zipRootDir = artifactsDir.Combine("zip");
 var nugetRoot = artifactsDir.Combine("nuget");
 var fileZipSuffix = ".zip";
 
+private bool MoveFolderContents(string SourcePath, string DestinationPath)
+{
+   SourcePath = SourcePath.EndsWith(@"\") ? SourcePath : SourcePath + @"\";
+   DestinationPath = DestinationPath.EndsWith(@"\") ? DestinationPath : DestinationPath + @"\";
+ 
+   try
+   {
+      if (System.IO.Directory.Exists(SourcePath))
+      {
+         if (System.IO.Directory.Exists(DestinationPath) == false)
+         {
+            System.IO.Directory.CreateDirectory(DestinationPath);
+         }
+ 
+         foreach (string files in System.IO.Directory.GetFiles(SourcePath))
+         {
+            FileInfo fileInfo = new FileInfo(files);
+            fileInfo.MoveTo(string.Format(@"{0}\{1}", DestinationPath, fileInfo.Name));
+         }
+ 
+         foreach (string drs in System.IO.Directory.GetDirectories(SourcePath))
+         {
+            System.IO.DirectoryInfo directoryInfo = new DirectoryInfo(drs);
+            if (MoveFolderContents(drs, DestinationPath + directoryInfo.Name) == false)
+            {
+               return false;
+            }
+         }
+      }
+      return true;
+   }
+   catch (Exception ex)
+   {
+      return false;
+   }
+}
+
 public class ArchiveDownloadInfo
 {
     public string URL {get;set;}
+    public string Name {get;set;}
     public FilePath DestinationFile {get; set;}
     public string Format {get; set;}
+    public Action<DirectoryPath, ArchiveDownloadInfo> PostExtract {get; set;}
 }
 
 public class ToolchainDownloadInfo
@@ -99,13 +138,32 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-                URL =  "http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+                URL =  "http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz",
+                Name = "clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04",
+                PostExtract = (curDir, info) =>{
+                    var tarFile = curDir.CombineWithFilePath("clang.tar");
+                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
+                    DeleteFile(tarFile);
+                    
+                    Information(curDir.Combine(info.Name).ToString() + "/*.*");
+
+                    MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
+
+                    DeleteDirectory(curDir.Combine(info.Name), true);
+                }
             },
             new ArchiveDownloadInfo()
             {
                 Format = "tar.bz2",
                 DestinationFile = "gcc.bz2",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update"
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update",
+                Name= "gcc-arm-none-eabi-6-2017-q1-update",
+                PostExtract = (curDir, info)=>
+                {
+                    MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
+
+                    DeleteDirectory(curDir.Combine(info.Name), true);
+                }
             }
         }
     }
@@ -125,7 +183,7 @@ Task("Clean")
 .Does(()=>{    
     foreach(var tc in toolchainDownloads)
     {
-        //CleanDirectory(tc.BaseDir);   
+        CleanDirectory(tc.BaseDir);   
         //CleanDirectory(tc.ZipDir);
     }
 });
@@ -159,14 +217,18 @@ Task("Extract-Toolchains")
             switch (downloadInfo.Format)
             {
                 case "tar.xz":
-                StartProcess(string.Format("7z e {0} {1}", fileName, dest));
-                GZipUncompress(fileName, dest);
+                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("e {0} -o{1}", fileName, dest) });
                 break;
 
                 case "tar.bz2":
                 BZip2Uncompress(fileName, dest);
                 break;
             }        
+
+            if(downloadInfo.PostExtract != null)
+            {
+                downloadInfo.PostExtract(dest, downloadInfo);
+            }
         }
     }
 });
