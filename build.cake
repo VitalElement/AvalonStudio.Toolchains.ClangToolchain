@@ -140,7 +140,7 @@ Task("Download-Toolchains")
 
             if(!FileExists(fileName))
             {
-                Information("downloadInfo.URL);
+                Information(downloadInfo.URL);
                 DownloadFile(downloadInfo.URL, fileName);
             }
         }
