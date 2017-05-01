@@ -184,7 +184,7 @@ Task("Clean")
     foreach(var tc in toolchainDownloads)
     {
         CleanDirectory(tc.BaseDir);   
-        //CleanDirectory(tc.ZipDir);
+        CleanDirectory(tc.ZipDir);
     }
 });
 
@@ -195,6 +195,8 @@ Task("Download-Toolchains")
         foreach(var downloadInfo in tc.Downloads)
         {
             var fileName = tc.ZipDir.CombineWithFilePath(downloadInfo.DestinationFile);
+
+            Information(string.Format("./{0}/{1}", tc.ZipDir, downloadInfo.DestinationFile));
 
             if(!FileExists(fileName))
             {
