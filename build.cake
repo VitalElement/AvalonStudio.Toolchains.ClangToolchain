@@ -241,7 +241,7 @@ Task("Clean")
     foreach(var tc in toolchainDownloads)
     {
         CleanDirectory(tc.BaseDir);   
-        //CleanDirectory(tc.ZipDir);
+        CleanDirectory(tc.ZipDir);
     }
 
     CleanDirectory(nugetRoot);
@@ -305,9 +305,9 @@ Task("Generate-NuGetPackages")
 });
 
 Task("Default")    
-    /*.IsDependentOn("Clean")
+    .IsDependentOn("Clean")
     .IsDependentOn("Download-Toolchains")
-    .IsDependentOn("Extract-Toolchains")*/
+    .IsDependentOn("Extract-Toolchains")
     .IsDependentOn("Generate-NuGetPackages");
 
 RunTarget(target);
