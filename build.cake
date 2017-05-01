@@ -199,7 +199,7 @@ Task("Download-Toolchains")
             if(!FileExists(fileName))
             {
                 Information(downloadInfo.URL);
-                DownloadFile("http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz", fileName);
+                DownloadFile("http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz", fileName.ToString());
             }
         }
     }
