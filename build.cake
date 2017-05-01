@@ -284,7 +284,7 @@ Task("Extract-Toolchains")
 
                 default:
                 case "tar.xz":
-                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("e {0} -o{1}", fileName, dest) });
+                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", fileName, dest) });
                 break;
             }        
 
