@@ -95,12 +95,12 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
         RID = "ubuntu14", 
         Downloads = new List<ArchiveDownloadInfo>()
         { 
-            /*new ArchiveDownloadInfo()
+            new ArchiveDownloadInfo()
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
                 URL =  "http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-            },*/
+            },
             new ArchiveDownloadInfo()
             {
                 Format = "tar.bz2",
@@ -159,7 +159,8 @@ Task("Extract-Toolchains")
             switch (downloadInfo.Format)
             {
                 case "tar.xz":
-                ZipUncompress(fileName, dest);
+                StartProcess(string.Format("7z e {0} {1}", fileName, dest));
+                GZipUncompress(fileName, dest);
                 break;
 
                 case "tar.bz2":
