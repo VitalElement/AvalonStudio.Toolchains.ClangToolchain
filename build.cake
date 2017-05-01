@@ -131,6 +131,34 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
 { 
     new ToolchainDownloadInfo (artifactsDir)
     { 
+        RID = "win-x64", 
+        Downloads = new List<ArchiveDownloadInfo>()
+        { 
+            new ArchiveDownloadInfo()
+            { 
+                Format = "exe", 
+                DestinationFile = "clang.exe", 
+                URL =  "http://releases.llvm.org/4.0.0/LLVM-4.0.0-win64.exe",
+                Name = "clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04",
+                PostExtract = (curDir, info) =>{
+                    DeleteDirectory(curDir.Combine("$PLUGINSDIR"), true);
+                }
+            },
+            new ArchiveDownloadInfo()
+            {
+                Format = "zip",
+                DestinationFile = "gcc.zip",
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-win32-zip.zip?product=GNU ARM Embedded Toolchain,ZIP,,Windows,6-2017-q1-update",
+                Name= "gcc-arm-none-eabi-6-2017-q1-update",
+                PostExtract = (curDir, info)=>
+                {
+                    
+                }
+            }
+        }
+    },
+    new ToolchainDownloadInfo (artifactsDir)
+    { 
         RID = "ubuntu14", 
         Downloads = new List<ArchiveDownloadInfo>()
         { 
@@ -169,6 +197,35 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
     }
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// NUGET NUSPECS
+///////////////////////////////////////////////////////////////////////////////
+public NuGetPackSettings GetPackSettings(string rid)
+{
+    var nuspecNuGetBehaviors = new NuGetPackSettings()
+    {
+        Id = "AvalonStudio.Toolchains.Clang." + rid,
+        Version = version,
+        Authors = new [] { "VitalElement" },
+        Owners = new [] { "Dan Walmsley" },
+        LicenseUrl = new Uri("http://opensource.org/licenses/MIT"),
+        ProjectUrl = new Uri("https://github.com/VitalElement/"),
+        RequireLicenseAcceptance = false,
+        Symbols = false,
+        NoPackageAnalysis = true,
+        Description = "Clang Toolchain for AvalonStudio",
+        Copyright = "Copyright 2017",
+        Tags = new [] { "clang", "AvalonStudio", "Toolchain" },
+        Files = new []
+        {
+            new NuSpecContent { Source = "artifacts/" + rid + "/**", Target = "content/" },
+        },
+        BasePath = Directory("./"),
+        OutputDirectory = nugetRoot
+    };
+
+    return nuspecNuGetBehaviors;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // INFORMATION
@@ -184,8 +241,10 @@ Task("Clean")
     foreach(var tc in toolchainDownloads)
     {
         CleanDirectory(tc.BaseDir);   
-        CleanDirectory(tc.ZipDir);
+        //CleanDirectory(tc.ZipDir);
     }
+
+    CleanDirectory(nugetRoot);
 });
 
 Task("Download-Toolchains")
@@ -215,12 +274,17 @@ Task("Extract-Toolchains")
 
             switch (downloadInfo.Format)
             {
-                case "tar.xz":
-                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("e {0} -o{1}", fileName, dest) });
-                break;
-
                 case "tar.bz2":
                 BZip2Uncompress(fileName, dest);
+                break;
+
+                case "zip":
+                ZipUncompress(fileName, dest);
+                break;
+
+                default:
+                case "tar.xz":
+                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("e {0} -o{1}", fileName, dest) });
                 break;
             }        
 
@@ -232,9 +296,18 @@ Task("Extract-Toolchains")
     }
 });
 
+Task("Generate-NuGetPackages")
+.Does(()=>{
+    foreach(var tc in toolchainDownloads)
+    {
+        NuGetPack(GetPackSettings(tc.RID));
+    }
+});
+
 Task("Default")    
-    .IsDependentOn("Clean")
+    /*.IsDependentOn("Clean")
     .IsDependentOn("Download-Toolchains")
-    .IsDependentOn("Extract-Toolchains");
+    .IsDependentOn("Extract-Toolchains")*/
+    .IsDependentOn("Generate-NuGetPackages");
 
 RunTarget(target);

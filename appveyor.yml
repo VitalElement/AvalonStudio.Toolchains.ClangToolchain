@@ -11,8 +11,7 @@ build_script:
 test: off
 
 artifacts:
-- path: artifacts/zip/*.zip
-- path: latest-version-badge.svg
+- path: artifacts/nuget/*.nupkg
 
 deploy:
 - provider: Environment
