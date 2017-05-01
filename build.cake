@@ -86,7 +86,7 @@ Task("Download-Toolchains")
 .Does(()=>{
     foreach(var tc in toolchainDownloads)
     {
-        DownloadFile(tc.Item3, $"./{tc.Item1}.{tc.Item2}");
+        DownloadFile(tc.Item3, string.Format("./{0}.{1}", tc.Item1, tc.Item2));
     }
 });
 
@@ -97,11 +97,11 @@ Task("Extract-Toolchains")
         switch (tc.Item2)
         {
             case "tar.xz":
-            ZipUncompress(($"./{tc.Item1}.{tc.Item2}", $"./{tc.Item1}");
+            ZipUncompress(string.Format("./{0}.{1}", tc.Item1, tc.Item2), string.Format("./{0}", tc.Item1));
             break;
 
             case "tar.bz2":
-            BZip2Uncompress($"./{tc.Item1}.{tc.Item2}", $"./{tc.Item1}");
+            BZip2Uncompress(string.Format("./{0}.{1}", tc.Item1, tc.Item2), string.Format("./{0}", tc.Item1));
             break;
         }        
     }
