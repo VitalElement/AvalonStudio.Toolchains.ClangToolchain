@@ -196,11 +196,9 @@ Task("Download-Toolchains")
         {
             var fileName = tc.ZipDir.CombineWithFilePath(downloadInfo.DestinationFile);
 
-            Information(string.Format("./{0}/{1}", tc.ZipDir, downloadInfo.DestinationFile));
-
             if(!FileExists(fileName))
             {
-                DownloadFile("http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz", string.Format("./{0}/{1}", tc.ZipDir, downloadInfo.DestinationFile));
+                DownloadFile(downloadInfo.URL, fileName);
             }
         }
     }
