@@ -218,9 +218,9 @@ public NuGetPackSettings GetPackSettings(string rid)
         Tags = new [] { "clang", "AvalonStudio", "Toolchain" },
         Files = new []
         {
-            new NuSpecContent { Source = "artifacts/" + rid + "/**", Target = "content/" },
+            new NuSpecContent { Source = "./**", Target = "content/" },
         },
-        BasePath = Directory("./"),
+        BasePath = Directory("artifacts/" + rid + "/"),
         OutputDirectory = nugetRoot
     };
 
