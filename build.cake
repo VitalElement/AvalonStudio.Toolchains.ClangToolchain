@@ -37,7 +37,7 @@ var configuration = Argument("configuration", "Release");
 // CONFIGURATION
 ///////////////////////////////////////////////////////////////////////////////
 
-var MainRepo = "AvaloniaUI/AvaloniaEdit";
+var MainRepo = "VitalElement/AvalonStudio.Toolchains.ClangToolchain";
 var MasterBranch = "master";
 var ReleasePlatform = "Any CPU";
 var ReleaseConfiguration = "Release";
@@ -46,6 +46,15 @@ var ReleaseConfiguration = "Release";
 // PARAMETERS
 ///////////////////////////////////////////////////////////////////////////////
 
+var isLocalBuild = BuildSystem.IsLocalBuild;
+var isRunningOnUnix = IsRunningOnUnix();
+var isRunningOnWindows = IsRunningOnWindows();
+var isRunningOnAppVeyor = BuildSystem.AppVeyor.IsRunningOnAppVeyor;
+var isPullRequest = BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest;
+var isMainRepo = StringComparer.OrdinalIgnoreCase.Equals(MainRepo, BuildSystem.AppVeyor.Environment.Repository.Name);
+var isMasterBranch = StringComparer.OrdinalIgnoreCase.Equals(MasterBranch, BuildSystem.AppVeyor.Environment.Repository.Branch);
+var isTagged = BuildSystem.AppVeyor.Environment.Repository.Tag.IsTag 
+               && !string.IsNullOrWhiteSpace(BuildSystem.AppVeyor.Environment.Repository.Tag.Name);
 
 ///////////////////////////////////////////////////////////////////////////////
 // VERSION
@@ -304,10 +313,41 @@ Task("Generate-NuGetPackages")
     }
 });
 
+Task("Publish-AppVeyorNuget")
+    .IsDependentOn("Generate-NuGetPackages")        
+    .WithCriteria(() => isMainRepo)
+    .WithCriteria(() => isMasterBranch)    
+    .Does(() =>
+{
+    var apiKey = EnvironmentVariable("APPVEYOR_NUGET_API_KEY");
+    if(string.IsNullOrEmpty(apiKey)) 
+    {
+        throw new InvalidOperationException("Could not resolve MyGet API key.");
+    }
+
+    var apiUrl = EnvironmentVariable("APPVEYOR_ACCOUNT_FEED_URL");
+    if(string.IsNullOrEmpty(apiUrl)) 
+    {
+        throw new InvalidOperationException("Could not resolve MyGet API url.");
+    }
+
+    foreach(var tc in toolchainDownloads)
+    {
+        var nuspec = GetPackSettings(tc.RID);
+        var settings  = nuspec.OutputDirectory.CombineWithFilePath(string.Concat(nuspec.Id, ".", nuspec.Version, ".nupkg"));
+
+        NuGetPush(settings, new NuGetPushSettings
+        {
+            Source = apiUrl,
+            ApiKey = apiUrl
+        });
+    }
+});
+
 Task("Default")    
     .IsDependentOn("Clean")
     .IsDependentOn("Download-Toolchains")
     .IsDependentOn("Extract-Toolchains")
-    .IsDependentOn("Generate-NuGetPackages");
-
+    .IsDependentOn("Generate-NuGetPackages")
+    .IsDependentOn("Publish-AppVeyorNuget");
 RunTarget(target);
