@@ -182,7 +182,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
     },
     new ToolchainDownloadInfo (artifactsDir)
     { 
-        RID = "ubuntu14", 
+        RID = "ubuntu", 
         Downloads = new List<ArchiveDownloadInfo>()
         { 
             new ArchiveDownloadInfo()
