@@ -339,7 +339,8 @@ Task("Publish-AppVeyorNuget")
         NuGetPush(settings, new NuGetPushSettings
         {
             Source = apiUrl,
-            ApiKey = apiKey
+            ApiKey = apiKey,
+            Timeout = TimeSpan.FromMinutes(15)
         });
     }
 });
