@@ -195,8 +195,6 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
                     DeleteFile(tarFile);
-                    
-                    Information(curDir.Combine(info.Name).ToString() + "/*.*");
 
                     MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
 
@@ -211,8 +209,11 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 Name= "gcc-arm-none-eabi-6-2017-q1-update",
                 PostExtract = (curDir, info)=>
                 {
+                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
+
                     MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
 
+                    DeleteFile(curDir.CombineWithFilePath("gcc"));
                     DeleteDirectory(curDir.Combine(info.Name), true);
                 }
             }
@@ -297,16 +298,14 @@ Task("Extract-Toolchains")
 
             switch (downloadInfo.Format)
             {
-                case "tar.bz2":
-                BZip2Uncompress(fileName, dest);
-                break;
-
                 case "zip":
                 ZipUncompress(fileName, dest);
                 break;
 
                 default:
+                case "tar.bz2":
                 case "tar.xz":
+                Information("7z" + string.Format("x {0} -o{1}", fileName, dest));
                 StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", fileName, dest) });
                 break;
             }        
