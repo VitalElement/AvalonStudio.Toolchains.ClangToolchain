@@ -60,7 +60,7 @@ var isTagged = BuildSystem.AppVeyor.Environment.Repository.Tag.IsTag
 // VERSION
 ///////////////////////////////////////////////////////////////////////////////
 
-var version = "4.0.0";
+var version = "3.9.0";
 
 if (isRunningOnAppVeyor)
 {
@@ -171,8 +171,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             {
                 Format = "zip",
                 DestinationFile = "gcc.zip",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-win32-zip.zip?product=GNU ARM Embedded Toolchain,ZIP,,Windows,6-2017-q1-update",
-                Name= "gcc-arm-none-eabi-6-2017-q1-update",
+                URL = "https://launchpad.net/gcc-arm-embedded/5.0/5-2015-q4-major/+download/gcc-arm-none-eabi-5_2-2015q4-20151219-win32.zip",
+                Name= "gcc-arm-none-eabi-5_2-2015q4-20151219-win32",
                 PostExtract = (curDir, info)=>
                 {
                     
@@ -205,7 +205,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             {
                 Format = "tar.bz2",
                 DestinationFile = "gcc.bz2",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update",
+                URL = "https://launchpad.net/gcc-arm-embedded/5.0/5-2015-q4-major/+download/gcc-arm-none-eabi-5_2-2015q4-20151219-linux.tar.bz2",
                 Name= "gcc-arm-none-eabi-6-2017-q1-update",
                 PostExtract = (curDir, info)=>
                 {
