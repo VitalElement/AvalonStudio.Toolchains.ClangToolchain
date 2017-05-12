@@ -172,7 +172,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 Format = "zip",
                 DestinationFile = "gcc.zip",
                 URL = "https://launchpad.net/gcc-arm-embedded/5.0/5-2015-q4-major/+download/gcc-arm-none-eabi-5_2-2015q4-20151219-win32.zip",
-                Name= "gcc-arm-none-eabi-5_2-2015q4-20151219-win32",
+                Name= "gcc-arm-none-eabi-5_2-2015q4",
                 PostExtract = (curDir, info)=>
                 {
                     
@@ -206,7 +206,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 Format = "tar.bz2",
                 DestinationFile = "gcc.bz2",
                 URL = "https://launchpad.net/gcc-arm-embedded/5.0/5-2015-q4-major/+download/gcc-arm-none-eabi-5_2-2015q4-20151219-linux.tar.bz2",
-                Name= "gcc-arm-none-eabi-5_2-2015q4-20151219",
+                Name= "gcc-arm-none-eabi-5_2-2015q4",
                 PostExtract = (curDir, info)=>
                 {
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
