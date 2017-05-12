@@ -206,7 +206,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 Format = "tar.bz2",
                 DestinationFile = "gcc.bz2",
                 URL = "https://launchpad.net/gcc-arm-embedded/5.0/5-2015-q4-major/+download/gcc-arm-none-eabi-5_2-2015q4-20151219-linux.tar.bz2",
-                Name= "gcc-arm-none-eabi-6-2017-q1-update",
+                Name= "gcc-arm-none-eabi-5_2-2015q4-20151219",
                 PostExtract = (curDir, info)=>
                 {
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
