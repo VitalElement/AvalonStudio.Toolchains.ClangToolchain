@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////////
 
 #addin "nuget:?package=Polly&version=5.0.6"
-#addin "nuget:?package=NuGet.Core&version=2.12.0"
+#addin "nuget:?package=NuGet.Core&version=2.14.0"
 #addin "nuget:?package=SharpZipLib&version=0.86.0"
 #addin "nuget:?package=Cake.Compression&version=0.1.1"
 
@@ -60,7 +60,7 @@ var isTagged = BuildSystem.AppVeyor.Environment.Repository.Tag.IsTag
 // VERSION
 ///////////////////////////////////////////////////////////////////////////////
 
-var version = "4.0.0";
+var version = "4.0.1";
 
 if (isRunningOnAppVeyor)
 {
@@ -161,8 +161,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "exe", 
                 DestinationFile = "clang.exe", 
-                URL =  "http://releases.llvm.org/4.0.0/LLVM-4.0.0-win64.exe",
-                Name = "clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04",
+                URL =  "http://releases.llvm.org/4.0.1/LLVM-4.0.1-win64.exe",
+                Name = "LLVM-4.0.1-win64.exe",
                 PostExtract = (curDir, info) =>{
                     DeleteDirectory(curDir.Combine("$PLUGINSDIR"), true);
                 }
@@ -171,8 +171,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             {
                 Format = "zip",
                 DestinationFile = "gcc.zip",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-win32-zip.zip?product=GNU ARM Embedded Toolchain,ZIP,,Windows,6-2017-q1-update",
-                Name= "gcc-arm-none-eabi-6-2017-q1-update",
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-win32.zip?product=GNU%20ARM%20Embedded%20Toolchain,ZIP,,Windows,6-2017-q2-update",
+                Name= "gcc-arm-none-eabi-6-2017-q2-update",
                 PostExtract = (curDir, info)=>
                 {
                     
@@ -205,8 +205,47 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             {
                 Format = "tar.bz2",
                 DestinationFile = "gcc.bz2",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6_1-2017q1/gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q1-update",
-                Name= "gcc-arm-none-eabi-6-2017-q1-update",
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q2-update",
+                Name= "gcc-arm-none-eabi-6-2017-q2-update",
+                PostExtract = (curDir, info)=>
+                {
+                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
+
+                    MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
+
+                    DeleteFile(curDir.CombineWithFilePath("gcc"));
+                    DeleteDirectory(curDir.Combine(info.Name), true);
+                }
+            }
+        }
+    },
+    new ToolchainDownloadInfo (artifactsDir)
+    { 
+        RID = "osx-x64", 
+        Downloads = new List<ArchiveDownloadInfo>()
+        { 
+            new ArchiveDownloadInfo()
+            { 
+                Format = "tar.xz", 
+                DestinationFile = "clang.tar.xz", 
+                URL =  "http://releases.llvm.org/4.0.1/clang+llvm-4.0.1-x86_64-apple-darwin.tar.xz",
+                Name = "clang+llvm-4.0.1-x86_64-apple-darwin.tar.xz",
+                PostExtract = (curDir, info) =>{
+                    var tarFile = curDir.CombineWithFilePath("clang.tar");
+                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
+                    DeleteFile(tarFile);
+
+                    MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
+
+                    DeleteDirectory(curDir.Combine(info.Name), true);
+                }
+            },
+            new ArchiveDownloadInfo()
+            {
+                Format = "tar.bz2",
+                DestinationFile = "gcc.bz2",
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-mac.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Mac%20OS%20X,6-2017-q2-update",
+                Name= "gcc-arm-none-eabi-6-2017-q2-update",
                 PostExtract = (curDir, info)=>
                 {
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
