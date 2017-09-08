@@ -161,8 +161,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "exe", 
                 DestinationFile = "clang.exe", 
-                URL =  "http://releases.llvm.org/4.0.1/LLVM-4.0.1-win64.exe",
-                Name = "LLVM-4.0.1-win64.exe",
+                URL =  "http://releases.llvm.org/5.0.0/LLVM-5.0.0-win64.exe",
+                Name = "LLVM-5.0.0-win64.exe",
                 PostExtract = (curDir, info) =>{
                     DeleteDirectory(curDir.Combine("$PLUGINSDIR"), true);
                 }
@@ -228,7 +228,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-                URL =  "http://releases.llvm.org/4.0.1/clang+llvm-4.0.1-x86_64-apple-darwin.tar.xz",
+                URL =  "http://releases.llvm.org/5.0.0/clang+llvm-5.0.0-x86_64-apple-darwin.tar.xz",
                 Name = "clang+llvm-4.0.1-x86_64-apple-macosx10.9.0",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
