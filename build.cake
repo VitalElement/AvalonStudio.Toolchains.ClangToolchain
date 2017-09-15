@@ -60,7 +60,7 @@ var isTagged = BuildSystem.AppVeyor.Environment.Repository.Tag.IsTag
 // VERSION
 ///////////////////////////////////////////////////////////////////////////////
 
-var version = "4.0.1";
+var version = "5.0.0";
 
 if (isRunningOnAppVeyor)
 {
