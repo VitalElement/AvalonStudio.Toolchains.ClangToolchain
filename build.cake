@@ -190,7 +190,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
                 URL =  "http://releases.llvm.org/5.0.0/clang+llvm-5.0.0-linux-x86_64-ubuntu14.04.tar.xz",
-                Name = "clang+llvm-5.0.0-linux-x86_64-ubuntu14.04.tar.xz",
+                Name = "clang+llvm-5.0.0-linux-x86_64-ubuntu14.04",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
