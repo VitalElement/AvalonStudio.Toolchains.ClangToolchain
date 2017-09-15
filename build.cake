@@ -189,8 +189,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-                URL =  "http://releases.llvm.org/4.0.0/clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz",
-                Name = "clang+llvm-4.0.0-x86_64-linux-gnu-ubuntu-14.04",
+                URL =  "http://releases.llvm.org/5.0.0/clang+llvm-5.0.0-linux-x86_64-ubuntu14.04.tar.xz",
+                Name = "clang+llvm-5.0.0-linux-x86_64-ubuntu14.04.tar.xz",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
@@ -229,7 +229,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
                 URL =  "http://releases.llvm.org/5.0.0/clang+llvm-5.0.0-x86_64-apple-darwin.tar.xz",
-                Name = "clang+llvm-4.0.1-x86_64-apple-macosx10.9.0",
+                Name = "clang+llvm-5.0.0-x86_64-apple-darwin",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
