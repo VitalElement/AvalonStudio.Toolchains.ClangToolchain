@@ -3,6 +3,7 @@ before_script:
     # Create symlinks for nuget.
   - mkdir -p /cache/.nuget
   - ln -s /cache/.nuget ~/.nuget
+  - apt-get -y install 7z
 
 AvalonStudio:
   script:     
