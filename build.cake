@@ -169,7 +169,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             },
             new ArchiveDownloadInfo()
             {
-                Format = "zip",
+                Format = "7z",
                 DestinationFile = "gcc.zip",
                 URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.exe?revision=732bae94-c929-403d-9520-0b2bccd81ad7?product=GNU Arm Embedded Toolchain,32-bit,,Windows,7-2017-q4-major",
                 Name= "gcc-arm-none-eabi-7-2017-q4-major",
@@ -304,7 +304,7 @@ Task("Clean")
     foreach(var tc in toolchainDownloads)
     {
         CleanDirectory(tc.BaseDir);   
-        CleanDirectory(tc.ZipDir);
+        //CleanDirectory(tc.ZipDir);
     }
 
     CleanDirectory(nugetRoot);
@@ -345,7 +345,7 @@ Task("Extract-Toolchains")
                 case "tar.bz2":
                 case "tar.xz":
                 Information("7z" + string.Format("x {0} -o{1}", fileName, dest));
-                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", fileName, dest) });
+                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -aoa -o{1}", fileName, dest) });
                 break;
             }        
 
