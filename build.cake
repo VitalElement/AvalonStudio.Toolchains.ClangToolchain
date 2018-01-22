@@ -304,7 +304,7 @@ Task("Clean")
     foreach(var tc in toolchainDownloads)
     {
         CleanDirectory(tc.BaseDir);   
-        //CleanDirectory(tc.ZipDir);
+        CleanDirectory(tc.ZipDir);
     }
 
     CleanDirectory(nugetRoot);
