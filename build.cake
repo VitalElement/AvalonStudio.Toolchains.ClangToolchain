@@ -229,7 +229,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
                 URL =  "http://releases.llvm.org/5.0.1/clang+llvm-5.0.1-x86_64-apple-darwin.tar.xz",
-                Name = "clang+llvm-5.0.1-x86_64-apple-darwin",
+                Name = "clang+llvm-5.0.1-final-x86_64-apple-darwin",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
