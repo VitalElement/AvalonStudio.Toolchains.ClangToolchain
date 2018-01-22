@@ -164,7 +164,11 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 URL =  "http://releases.llvm.org/5.0.1/LLVM-5.0.1-win64.exe",
                 Name = "LLVM-5.0.1-win64.exe",
                 PostExtract = (curDir, info) =>{
-                    DeleteDirectory(curDir.Combine("$PLUGINSDIR"), true);
+
+                    if(DirectoryExists(curDir.Combine("$PLUGINSDIR")))
+                    {
+                        DeleteDirectory(curDir.Combine("$PLUGINSDIR"), true);
+                    }
                 }
             },
             new ArchiveDownloadInfo()
