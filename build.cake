@@ -60,7 +60,7 @@ var isTagged = BuildSystem.AppVeyor.Environment.Repository.Tag.IsTag
 // VERSION
 ///////////////////////////////////////////////////////////////////////////////
 
-var version = "5.0.0";
+var version = "5.0.1";
 
 if (isRunningOnAppVeyor)
 {
@@ -161,8 +161,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "exe", 
                 DestinationFile = "clang.exe", 
-                URL =  "http://releases.llvm.org/5.0.0/LLVM-5.0.0-win64.exe",
-                Name = "LLVM-5.0.0-win64.exe",
+                URL =  "http://releases.llvm.org/5.0.1/LLVM-5.0.1-win64.exe",
+                Name = "LLVM-5.0.1-win64.exe",
                 PostExtract = (curDir, info) =>{
                     DeleteDirectory(curDir.Combine("$PLUGINSDIR"), true);
                 }
@@ -171,8 +171,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             {
                 Format = "zip",
                 DestinationFile = "gcc.zip",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-win32.zip?product=GNU%20ARM%20Embedded%20Toolchain,ZIP,,Windows,6-2017-q2-update",
-                Name= "gcc-arm-none-eabi-6-2017-q2-update",
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.exe?revision=732bae94-c929-403d-9520-0b2bccd81ad7?product=GNU Arm Embedded Toolchain,32-bit,,Windows,7-2017-q4-major",
+                Name= "gcc-arm-none-eabi-7-2017-q4-major",
                 PostExtract = (curDir, info)=>
                 {
                     
@@ -189,8 +189,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-                URL =  "http://releases.llvm.org/5.0.0/clang+llvm-5.0.0-linux-x86_64-ubuntu14.04.tar.xz",
-                Name = "clang+llvm-5.0.0-linux-x86_64-ubuntu14.04",
+                URL =  "http://releases.llvm.org/5.0.1/clang+llvm-5.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz",
+                Name = "clang+llvm-5.0.1-x86_64-linux-gnu-ubuntu-16.04",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
@@ -205,8 +205,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             {
                 Format = "tar.bz2",
                 DestinationFile = "gcc.bz2",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Linux,6-2017-q2-update",
-                Name= "gcc-arm-none-eabi-6-2017-q2-update",
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2?revision=375265d4-e9b5-41c8-bf23-56cbe927e156?product=GNU Arm Embedded Toolchain,64-bit,,Linux,7-2017-q4-major",
+                Name= "gcc-arm-none-eabi-7-2017-q4-major",
                 PostExtract = (curDir, info)=>
                 {
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
@@ -228,8 +228,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-                URL =  "http://releases.llvm.org/5.0.0/clang+llvm-5.0.0-x86_64-apple-darwin.tar.xz",
-                Name = "clang+llvm-5.0.0-x86_64-apple-darwin",
+                URL =  "http://releases.llvm.org/5.0.1/clang+llvm-5.0.1-x86_64-apple-darwin.tar.xz",
+                Name = "clang+llvm-5.0.1-x86_64-apple-darwin",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
@@ -244,8 +244,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             {
                 Format = "tar.bz2",
                 DestinationFile = "gcc.bz2",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-mac.tar.bz2?product=GNU%20ARM%20Embedded%20Toolchain,64-bit,,Mac%20OS%20X,6-2017-q2-update",
-                Name= "gcc-arm-none-eabi-6-2017-q2-update",
+                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2?revision=7f453378-b2c3-4c0d-8eab-e7d5db8ea32e?product=GNU Arm Embedded Toolchain,64-bit,,Mac OS X,7-2017-q4-major",
+                Name= "gcc-arm-none-eabi-7-2017-q4-major",
                 PostExtract = (curDir, info)=>
                 {
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
@@ -277,7 +277,7 @@ public NuGetPackSettings GetPackSettings(string rid)
         Symbols = false,
         NoPackageAnalysis = true,
         Description = "Clang Toolchain for AvalonStudio",
-        Copyright = "Copyright 2017",
+        Copyright = "Copyright 2018",
         Tags = new [] { "clang", "AvalonStudio", "Toolchain" },
         Files = new []
         {
