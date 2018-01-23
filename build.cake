@@ -417,6 +417,6 @@ Task("Default")
     .IsDependentOn("Clean")
     .IsDependentOn("Download-Toolchains")
     .IsDependentOn("Extract-Toolchains")
-    .IsDependentOn("Generate-NuGetPackages")
-    .IsDependentOn("Publish-AppVeyorNuget");
+    .IsDependentOn("Generate-NuGetPackages");
+    //.IsDependentOn("Publish-AppVeyorNuget");
 RunTarget(target);
