@@ -408,7 +408,7 @@ Task("Publish-AppVeyorNuget")
         {
             Source = apiUrl,
             ApiKey = apiKey,
-            Timeout = TimeSpan.FromMinutes(15)
+            Timeout = TimeSpan.FromMinutes(45)
         });
     }
 });
