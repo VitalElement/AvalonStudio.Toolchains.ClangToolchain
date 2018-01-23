@@ -196,34 +196,43 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 URL =  "http://releases.llvm.org/5.0.1/clang+llvm-5.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz",
                 Name = "clang+llvm-5.0.1-x86_64-linux-gnu-ubuntu-16.04",
                 PostExtract = (curDir, info) =>{
+
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
-                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
-                    DeleteFile(tarFile);
+                    
+                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile.ToString(), curDir.ToString()) });
 
                     MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
 
-                    DeleteDirectory(curDir.Combine(info.Name), true);
+                    DeleteFile(tarFile);
+                    //DeleteDirectory(curDir.Combine(info.Name), true);
                 }
             },
             new ArchiveDownloadInfo()
             {
                 Format = "tar.bz2",
-                DestinationFile = "gcc.bz2",
+                DestinationFile = "gcc.tar.bz2",
                 URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2?revision=375265d4-e9b5-41c8-bf23-56cbe927e156?product=GNU Arm Embedded Toolchain,64-bit,,Linux,7-2017-q4-major",
                 Name= "gcc-arm-none-eabi-7-2017-q4-major",
                 PostExtract = (curDir, info)=>
                 {
-                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
+                    var tarFile = curDir.CombineWithFilePath("gcc.tar");
+                    Information(tarFile);
+                    var args = string.Format("x {0} -o{1}", tarFile.ToString(), curDir.ToString());
+                    Information(args);
+                    StartProcess("7z", new ProcessSettings{ Arguments = args, WorkingDirectory = curDir } );
+
+                    Information(curDir.ToString());
+                    Information(curDir.Combine(info.Name).ToString());
 
                     MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
 
-                    DeleteFile(curDir.CombineWithFilePath("gcc"));
-                    DeleteDirectory(curDir.Combine(info.Name), true);
+                    DeleteFile(tarFile);
+                    //DeleteDirectory(curDir.Combine(info.Name), true);
                 }
             }
         }
     },
-    new ToolchainDownloadInfo (artifactsDir)
+/*    new ToolchainDownloadInfo (artifactsDir)
     { 
         RID = "osx-x64", 
         Downloads = new List<ArchiveDownloadInfo>()
@@ -261,7 +270,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                 }
             }
         }
-    }
+    }*/
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -308,7 +317,7 @@ Task("Clean")
     foreach(var tc in toolchainDownloads)
     {
         CleanDirectory(tc.BaseDir);   
-        CleanDirectory(tc.ZipDir);
+        //CleanDirectory(tc.ZipDir);
     }
 
     CleanDirectory(nugetRoot);
@@ -336,8 +345,8 @@ Task("Extract-Toolchains")
     {
         foreach(var downloadInfo in tc.Downloads)
         {
-            var fileName = tc.ZipDir.CombineWithFilePath(downloadInfo.DestinationFile);
-            var dest = tc.BaseDir;
+            var fileName = tc.ZipDir.MakeAbsolute(Context.Environment).CombineWithFilePath(downloadInfo.DestinationFile);
+            var dest = tc.BaseDir.MakeAbsolute(Context.Environment);
 
             switch (downloadInfo.Format)
             {
@@ -347,9 +356,12 @@ Task("Extract-Toolchains")
 
                 default:
                 case "tar.bz2":
-                case "tar.xz":
-                Information("7z" + string.Format("x {0} -o{1}", fileName, dest));
-                StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -aoa -o{1}", fileName, dest) });
+                case "tar.xz":                
+                ProcessSettings settings = new ProcessSettings{ Arguments = string.Format("x {0} -aoa -o{1}", fileName, dest) };
+
+                Information("7z " + settings.Arguments.Render());
+
+                StartProcess("7z", settings);
                 break;
             }        
 
