@@ -161,8 +161,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "exe", 
                 DestinationFile = "clang.exe", 
-                URL =  "http://releases.llvm.org/6.0.0/LLVM-6.0.0-win64.exe",
-                Name = "LLVM-6.0.0-win64.exe",
+                URL =  "http://releases.llvm.org/7.0.0/LLVM-7.0.0-win64.exe",
+                Name = "LLVM-7.0.0-win64.exe",
                 PostExtract = (curDir, info) =>{
 
                     if(DirectoryExists(curDir.Combine("$PLUGINSDIR")))
@@ -193,8 +193,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-                URL =  "http://releases.llvm.org/6.0.0/clang+llvm-6.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz",
-                Name = "clang+llvm-6.0.0-x86_64-linux-gnu-ubuntu-14.04",
+		URL =  "http://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz",
+                Name = "clang+llvm-7.0.0-x86_64-linux-gnu-ubuntu-14.04",
                 PostExtract = (curDir, info) =>{
 
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
@@ -241,8 +241,8 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-                URL =  "http://releases.llvm.org/5.0.1/clang+llvm-5.0.1-x86_64-apple-darwin.tar.xz",
-                Name = "clang+llvm-5.0.1-final-x86_64-apple-darwin",
+		URL = "http://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz",
+                Name = "clang+llvm-7.0.0-final-x86_64-apple-darwin",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
                     StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", tarFile, curDir) });
