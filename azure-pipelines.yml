@@ -3,6 +3,5 @@ jobs:
   pool:
     name: 'Default'
   steps:
-  - powershell: avalon
   - powershell: .\build.ps1
 

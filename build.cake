@@ -170,17 +170,6 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                         DeleteDirectory(curDir.Combine("$PLUGINSDIR"), true);
                     }
                 }
-            },
-            new ArchiveDownloadInfo()
-            {
-                Format = "7z",
-                DestinationFile = "gcc.zip",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-win32.exe?revision=732bae94-c929-403d-9520-0b2bccd81ad7?product=GNU Arm Embedded Toolchain,32-bit,,Windows,7-2017-q4-major",
-                Name= "gcc-arm-none-eabi-7-2017-q4-major",
-                PostExtract = (curDir, info)=>
-                {
-                    
-                }
             }
         }
     },
@@ -206,33 +195,10 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
                     DeleteFile(tarFile);
                     //DeleteDirectory(curDir.Combine(info.Name), true);
                 }
-            },
-            new ArchiveDownloadInfo()
-            {
-                Format = "tar.bz2",
-                DestinationFile = "gcc.tar.bz2",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-linux.tar.bz2?revision=375265d4-e9b5-41c8-bf23-56cbe927e156?product=GNU Arm Embedded Toolchain,64-bit,,Linux,7-2017-q4-major",
-                Name= "gcc-arm-none-eabi-7-2017-q4-major",
-                PostExtract = (curDir, info)=>
-                {
-                    var tarFile = curDir.CombineWithFilePath("gcc.tar");
-                    Information(tarFile);
-                    var args = string.Format("x {0} -o{1}", tarFile.ToString(), curDir.ToString());
-                    Information(args);
-                    StartProcess("7z", new ProcessSettings{ Arguments = args, WorkingDirectory = curDir } );
-
-                    Information(curDir.ToString());
-                    Information(curDir.Combine(info.Name).ToString());
-
-                    MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
-
-                    DeleteFile(tarFile);
-                    //DeleteDirectory(curDir.Combine(info.Name), true);
-                }
             }
         }
     },
-/*    new ToolchainDownloadInfo (artifactsDir)
+    new ToolchainDownloadInfo (artifactsDir)
     { 
         RID = "osx-x64", 
         Downloads = new List<ArchiveDownloadInfo>()
@@ -241,7 +207,7 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
             { 
                 Format = "tar.xz", 
                 DestinationFile = "clang.tar.xz", 
-		URL = "http://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz",
+		        URL = "http://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-apple-darwin.tar.xz",
                 Name = "clang+llvm-7.0.0-final-x86_64-apple-darwin",
                 PostExtract = (curDir, info) =>{
                     var tarFile = curDir.CombineWithFilePath("clang.tar");
@@ -252,61 +218,10 @@ var toolchainDownloads = new List<ToolchainDownloadInfo>
 
                     DeleteDirectory(curDir.Combine(info.Name), true);
                 }
-            },
-            new ArchiveDownloadInfo()
-            {
-                Format = "tar.bz2",
-                DestinationFile = "gcc.bz2",
-                URL = "https://developer.arm.com/-/media/Files/downloads/gnu-rm/7-2017q4/gcc-arm-none-eabi-7-2017-q4-major-mac.tar.bz2?revision=7f453378-b2c3-4c0d-8eab-e7d5db8ea32e?product=GNU Arm Embedded Toolchain,64-bit,,Mac OS X,7-2017-q4-major",
-                Name= "gcc-arm-none-eabi-7-2017-q4-major",
-                PostExtract = (curDir, info)=>
-                {
-                    StartProcess("7z", new ProcessSettings{ Arguments = string.Format("x {0} -o{1}", curDir.CombineWithFilePath("gcc").ToString(), curDir.ToString()) });
-
-                    MoveFolderContents(curDir.Combine(info.Name).ToString(), curDir.ToString());
-
-                    DeleteFile(curDir.CombineWithFilePath("gcc"));
-                    DeleteDirectory(curDir.Combine(info.Name), true);
-                }
             }
         }
-    }*/
+    }
 };
-
-///////////////////////////////////////////////////////////////////////////////
-// NUGET NUSPECS
-///////////////////////////////////////////////////////////////////////////////
-public NuGetPackSettings GetPackSettings(string rid)
-{
-    var nuspecNuGetBehaviors = new NuGetPackSettings()
-    {
-        Id = "AvalonStudio.Toolchains.Clang." + rid,
-        Version = version,
-        Authors = new [] { "VitalElement" },
-        Owners = new [] { "Dan Walmsley" },
-        LicenseUrl = new Uri("http://opensource.org/licenses/MIT"),
-        ProjectUrl = new Uri("https://github.com/VitalElement/"),
-        RequireLicenseAcceptance = false,
-        Symbols = false,
-        NoPackageAnalysis = true,
-        Description = "Clang Toolchain for AvalonStudio",
-        Copyright = "Copyright 2018",
-        Tags = new [] { "clang", "AvalonStudio", "Toolchain" },
-        Files = new []
-        {
-            new NuSpecContent { Source = "**", Target = "content/" },
-        },
-        BasePath = Directory("artifacts/" + rid + "/"),
-        OutputDirectory = nugetRoot
-    };
-
-    return nuspecNuGetBehaviors;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// INFORMATION
-///////////////////////////////////////////////////////////////////////////////
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
@@ -373,50 +288,8 @@ Task("Extract-Toolchains")
     }
 });
 
-Task("Generate-NuGetPackages")
-.Does(()=>{
-    foreach(var tc in toolchainDownloads)
-    {
-        NuGetPack(GetPackSettings(tc.RID));
-    }
-});
-
-Task("Publish-AppVeyorNuget")
-    .IsDependentOn("Generate-NuGetPackages")        
-    .WithCriteria(() => isMainRepo)
-    .WithCriteria(() => isMasterBranch)    
-    .Does(() =>
-{
-    var apiKey = EnvironmentVariable("APPVEYOR_NUGET_API_KEY");
-    if(string.IsNullOrEmpty(apiKey)) 
-    {
-        throw new InvalidOperationException("Could not resolve MyGet API key.");
-    }
-
-    var apiUrl = EnvironmentVariable("APPVEYOR_ACCOUNT_FEED_URL");
-    if(string.IsNullOrEmpty(apiUrl)) 
-    {
-        throw new InvalidOperationException("Could not resolve MyGet API url.");
-    }
-
-    foreach(var tc in toolchainDownloads)
-    {
-        var nuspec = GetPackSettings(tc.RID);
-        var settings  = nuspec.OutputDirectory.CombineWithFilePath(string.Concat(nuspec.Id, ".", nuspec.Version, ".nupkg"));
-
-        NuGetPush(settings, new NuGetPushSettings
-        {
-            Source = apiUrl,
-            ApiKey = apiKey,
-            Timeout = TimeSpan.FromMinutes(45)
-        });
-    }
-});
-
 Task("Default")    
     .IsDependentOn("Clean")
     .IsDependentOn("Download-Toolchains")
-    .IsDependentOn("Extract-Toolchains")
-    .IsDependentOn("Generate-NuGetPackages");
-    //.IsDependentOn("Publish-AppVeyorNuget");
+    .IsDependentOn("Extract-Toolchains");
 RunTarget(target);
