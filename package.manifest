@@ -1,0 +1,14 @@
+{
+  "properties": {
+    "Gcc.CC": "bin/clang",
+    "Gcc.CXX": "bin/clang++",
+    "Gcc.AR": "bin/arm-none-eabi-ar?Package=Clang&Version=5.0.1.59",
+    "Gcc.LD": "bin/arm-none-eabi-gcc?Package=Clang&Version=5.0.1.59",
+    "Gcc.SIZE": "bin/arm-none-eabi-size?Package=Clang&Version=5.0.1.59",
+    "Gcc.GDB": "bin/arm-none-eabi-gdb?Package=Clang&Version=5.0.1.59",
+    "Gcc.LibraryQueryCommand": "bin/arm-none-eabi-gcc?Package=Clang&Version=5.0.1.59",
+    "Paths": [
+      "bin/"
+    ]
+  }
+}
